@@ -1,0 +1,35 @@
+<!doctype html>
+<title>Card Game</title>
+<script>
+	window.onload = function(){
+		var inbox = new WebSocket("ws://"+ location.host +"/receive");
+		var outbox = new WebSocket("ws://"+ location.host +"/submit");
+		
+		var sendText = document.getElementById("sendText");
+		outbox.onopen = function(){
+			outbox.send("Ping");
+		};
+
+		outbox.onerror = function(error) {
+			console.log("WebSocket Error: " + error);
+		};
+
+		outbox.onclose = function(e) {
+			console.log("WebSocket Close: " + e.code);
+		};
+		inbox.onmessage = function(e) {
+			console.log('Server: ' + e.data);
+		};
+		document.getElementById("sendTextBtn").onclick = function() {
+			if(sendText.value.length > 0)
+			{
+				outbox.send(JSON.stringify({message: sendText.value}));
+				sendText.value = "";
+			}
+		}
+		console.log("Stuff");
+	};
+</script>
+<h1>Card Game</h1>
+<input type="text" id="sendText" />
+<button id="sendTextBtn">Send Message</button>
